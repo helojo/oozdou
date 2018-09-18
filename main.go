@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/usthooz/oozgconf"
 	ozlog "github.com/usthooz/oozlog/go"
@@ -11,13 +12,18 @@ import (
 
 // Config config
 type Config struct {
-	Pokers []string `yaml:"pokers"`
+	Pokers []string `json:"pokers"`
 }
 
 var (
-	firstPlayer  = make(chan []string, 20)
-	secondPlayer = make(chan []string, 20)
-	mainPlayer   = make(chan []string, 20)
+	FirstPlayer  = make(chan string)
+	SecondPlayer = make(chan string)
+	MainPlayer   = make(chan string)
+)
+
+var (
+	// 玩家1、玩家2、主玩家、地主牌
+	firstPokers, secondPokers, mainPokers, lordTokers []string
 )
 
 var (
@@ -27,13 +33,15 @@ var (
 // init init
 func init() {
 	ozconf := oozgconf.NewConf(&oozgconf.OozGconf{
-		ConfPath: "./config/config.yaml",
-		Subffix:  "yaml",
+		ConfPath: "./config/config.json",
+		Subffix:  "json",
 	})
 	err := ozconf.GetConf(&conf)
 	if err != nil {
 		ozlog.Errorf("GetConf Err: %v", err.Error())
 	}
+	ozlog.Infof("Pockers len: %d", len(conf.Pokers))
+	InitPockers(conf.Pokers)
 }
 
 func main() {
@@ -47,42 +55,65 @@ func main() {
 	if isStart == "n" {
 		os.Exit(0)
 	}
-
 	var (
 		wg sync.WaitGroup
 	)
-	// 玩家1
+	// 发牌
 	go func() {
 		for {
-			pockers, ok := <-firstPlayer
-			if !ok {
-				break
-			}
-			ozlog.Infof("我拿到牌了，我的牌是: %v", pockers)
+			ozlog.Infof("开始发牌.")
+			Handout()
+			ozlog.Infof("发牌完成.")
+			ozlog.Infof("地主牌: %v", mainPokers)
+			ozlog.Infof("MainPlayer Pockers: %v", mainPokers)
+			ozlog.Infof("FirsetPlayer Pockers: %v", firstPokers)
+			ozlog.Infof("SecondPlayer Pockers: %v", secondPokers)
+			time.Sleep(time.Duration(1) * time.Hour)
 		}
 		wg.Done()
 	}()
+	wg.Add(1)
+
+	// 玩家1
+	go func() {
+		for {
+			pocker, ok := <-FirstPlayer
+			if !ok {
+				ozlog.Infof("first exit.")
+				break
+			}
+			firstPokers = append(firstPokers, pocker)
+			ozlog.Infof("我拿到牌了，我的牌是: %s", pocker)
+		}
+		wg.Done()
+	}()
+	wg.Add(1)
 
 	// 玩家2
 	go func() {
 		for {
-			pockers, ok := <-secondPlayer
+			pocker, ok := <-SecondPlayer
 			if !ok {
+				ozlog.Infof("second exit.")
 				break
 			}
-			ozlog.Infof("我拿到牌了，我的牌是: %v", pocker)
+			secondPokers = append(secondPokers, pocker)
+			ozlog.Infof("我拿到牌了，我的牌是: %s", pocker)
 		}
 		wg.Done()
 	}()
+	wg.Add(1)
 
 	// 主玩家
 	go func() {
 		for {
-			pockers, ok := <-secondPlayer
+			pocker, ok := <-MainPlayer
 			if !ok {
+				ozlog.Infof("main exit.")
 				break
 			}
-			ozlog.Infof("我拿到牌了，我的牌是: %v", pockers)
+			mainPokers = append(mainPokers, pocker)
+			ozlog.Infof("我拿到牌了，我的牌是: %s", pocker)
 		}
 		wg.Done()
 	}()
