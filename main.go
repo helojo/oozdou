@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sync"
 
 	"github.com/usthooz/oozgconf"
 	ozlog "github.com/usthooz/oozlog/go"
@@ -46,4 +47,45 @@ func main() {
 	if isStart == "n" {
 		os.Exit(0)
 	}
+
+	var (
+		wg sync.WaitGroup
+	)
+	// 玩家1
+	go func() {
+		for {
+			pockers, ok := <-firstPlayer
+			if !ok {
+				break
+			}
+			ozlog.Infof("我拿到牌了，我的牌是: %v", pockers)
+		}
+		wg.Done()
+	}()
+
+	// 玩家2
+	go func() {
+		for {
+			pockers, ok := <-secondPlayer
+			if !ok {
+				break
+			}
+			ozlog.Infof("我拿到牌了，我的牌是: %v", pocker)
+		}
+		wg.Done()
+	}()
+
+	// 主玩家
+	go func() {
+		for {
+			pockers, ok := <-secondPlayer
+			if !ok {
+				break
+			}
+			ozlog.Infof("我拿到牌了，我的牌是: %v", pockers)
+		}
+		wg.Done()
+	}()
+	wg.Add(1)
+	wg.Wait()
 }
