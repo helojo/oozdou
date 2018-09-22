@@ -64,41 +64,18 @@ func main() {
 			ozlog.Infof("开始发牌.")
 			Handout()
 			ozlog.Infof("发牌完成.")
-			ozlog.Infof("地主牌: %v", mainPokers)
+			ozlog.Infof("地主牌: %v", lordTokers)
+
 			ozlog.Infof("MainPlayer Pockers: %v", mainPokers)
-			ozlog.Infof("FirsetPlayer Pockers: %v", firstPokers)
+			ozlog.Infof("我的牌数: %d", len(mainPokers))
+
+			ozlog.Infof("FirstPlayer Pockers: %v", firstPokers)
+			ozlog.Infof("我的牌数: %d", len(firstPokers))
+
 			ozlog.Infof("SecondPlayer Pockers: %v", secondPokers)
+			ozlog.Infof("我的牌数: %d", len(secondPokers))
+
 			time.Sleep(time.Duration(1) * time.Hour)
-		}
-		wg.Done()
-	}()
-	wg.Add(1)
-
-	// 玩家1
-	go func() {
-		for {
-			pocker, ok := <-FirstPlayer
-			if !ok {
-				ozlog.Infof("first exit.")
-				break
-			}
-			firstPokers = append(firstPokers, pocker)
-			ozlog.Infof("我拿到牌了，我的牌是: %s", pocker)
-		}
-		wg.Done()
-	}()
-	wg.Add(1)
-
-	// 玩家2
-	go func() {
-		for {
-			pocker, ok := <-SecondPlayer
-			if !ok {
-				ozlog.Infof("second exit.")
-				break
-			}
-			secondPokers = append(secondPokers, pocker)
-			ozlog.Infof("我拿到牌了，我的牌是: %s", pocker)
 		}
 		wg.Done()
 	}()
@@ -113,7 +90,34 @@ func main() {
 				break
 			}
 			mainPokers = append(mainPokers, pocker)
-			ozlog.Infof("我拿到牌了，我的牌是: %s", pocker)
+		}
+		wg.Done()
+	}()
+	wg.Add(1)
+
+	// 玩家1
+	go func() {
+		for {
+			pocker, ok := <-FirstPlayer
+			if !ok {
+				ozlog.Infof("first exit.")
+				break
+			}
+			firstPokers = append(firstPokers, pocker)
+		}
+		wg.Done()
+	}()
+	wg.Add(1)
+
+	// 玩家2
+	go func() {
+		for {
+			pocker, ok := <-SecondPlayer
+			if !ok {
+				ozlog.Infof("second exit.")
+				break
+			}
+			secondPokers = append(secondPokers, pocker)
 		}
 		wg.Done()
 	}()
