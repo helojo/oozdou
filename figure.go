@@ -18,7 +18,12 @@ func GetPlayerWeight(playersPockers []string) int {
 		weight int
 	)
 	one, two, three, four := trimBoardGroup(playersPockers)
-	weight += len(one) + len(two)*2 + len(three)*3 + len(four)*4
+	oneC, _ := one[OneBoards]
+	twoC, _ := two[TwoBoards]
+	threeC, _ := three[ThreeBoards]
+	fourC, _ := four[FourBoards]
+	weight += len(oneC)*OneBoardsCount + len(twoC)*TwoBoardsCount + len(threeC)*ThreeBoardsCount + len(fourC)*FourBoardsCount
+	// 大小王权重
 	weight += getKingBombNum(playersPockers)
 	return weight
 }
@@ -141,20 +146,20 @@ func trimTwinsBoards(boards []int) (map[int][]int, map[int][]int, map[int][]int,
 					break
 				}
 				if boards[i] == boards[i+3] {
-					fourBoards[4] = append(fourBoards[4], boards[i], boards[i+1], boards[i+2], boards[1+3])
-					curLen += 4
+					fourBoards[FourBoards] = append(fourBoards[FourBoards], boards[i], boards[i+1], boards[i+2], boards[1+3])
+					curLen += FourBoards
 					continue
 				}
-				threeBoards[3] = append(threeBoards[3], boards[i], boards[i+1], boards[i+2])
-				curLen += 3
+				threeBoards[ThreeBoards] = append(threeBoards[ThreeBoards], boards[i], boards[i+1], boards[i+2])
+				curLen += ThreeBoards
 				continue
 			}
-			twoBoards[2] = append(twoBoards[3], boards[i], boards[i+1])
-			curLen += 2
+			twoBoards[TwoBoards] = append(twoBoards[TwoBoards], boards[i], boards[i+1])
+			curLen += TwoBoards
 			continue
 		}
-		singleBoards[1] = append(singleBoards[1], boards[i])
-		curLen += 1
+		singleBoards[OneBoards] = append(singleBoards[OneBoards], boards[i])
+		curLen += OneBoards
 	}
 	return singleBoards, twoBoards, threeBoards, fourBoards
 }
