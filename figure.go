@@ -17,8 +17,8 @@ func GetPlayerWeight(playersPockers []string) int {
 		// 权重
 		weight int
 	)
-	twins := getTwinsNum(playersPockers)
-	weight += twins * 2
+	one, two, three, four := trimBoardGroup(playersPockers)
+	weight += len(one) + len(two)*2 + len(three)*3 + len(four)*4
 	return weight
 }
 
@@ -62,7 +62,7 @@ func getTwinsNum(as []string) int {
 }
 
 // trimBoardGroup 洗牌
-func trimBoardGroup(boards []string) {
+func trimBoardGroup(boards []string) (map[int][]int, map[int][]int, map[int][]int, map[int][]int) {
 	// 查找是否存在大小王
 	b := binarySearch(boards, BigKing)
 	if b >= 0 {
@@ -73,7 +73,7 @@ func trimBoardGroup(boards []string) {
 		boards = append(boards[:s], boards[s+1:]...)
 	}
 	bs := sortBoard(boards)
-	one, two, three, four := trimTwinsBoards(bs)
+	return trimTwinsBoards(bs)
 }
 
 // sortBoard 洗牌-按照牌面大小将所有牌从小到大排列
