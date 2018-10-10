@@ -19,7 +19,27 @@ func GetPlayerWeight(playersPockers []string) int {
 	)
 	one, two, three, four := trimBoardGroup(playersPockers)
 	weight += len(one) + len(two)*2 + len(three)*3 + len(four)*4
+	weight += getKingBombNum(playersPockers)
 	return weight
+}
+
+// getKingBombNum 王炸权重计算
+func getKingBombNum(playersPockers []string) (weight int) {
+	b := binarySearch(playersPockers, BigKing)
+	s := binarySearch(playersPockers, SmallKing)
+	if b >= 0 && s >= 0 {
+		weight = KingBombCount
+		return
+	}
+	if b >= 0 {
+		weight = BigKingCount
+		return
+	}
+	if s >= 0 {
+		weight = SmallKingCount
+		return
+	}
+	return
 }
 
 // getTwinsNum 时间复杂度 2logn output: 单个对子的总量
