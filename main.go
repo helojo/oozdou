@@ -68,12 +68,18 @@ func main() {
 
 			ozlog.Infof("MainPlayer Pockers: %v", mainPokers)
 			ozlog.Infof("我的牌数: %d", len(mainPokers))
+			weight := GetPlayerWeight(mainPokers)
+			ozlog.Warnf("Main Weight: %d", weight)
 
 			ozlog.Infof("FirstPlayer Pockers: %v", firstPokers)
 			ozlog.Infof("我的牌数: %d", len(firstPokers))
+			weight = GetPlayerWeight(firstPokers)
+			ozlog.Warnf("First Weight: %d", weight)
 
 			ozlog.Infof("SecondPlayer Pockers: %v", secondPokers)
 			ozlog.Infof("我的牌数: %d", len(secondPokers))
+			weight = GetPlayerWeight(secondPokers)
+			ozlog.Warnf("Sconde Weight: %d", weight)
 
 			time.Sleep(time.Duration(1) * time.Hour)
 		}
