@@ -28,10 +28,8 @@ func Handout() {
 	length := len(pockers)
 	// 发放普通牌
 	for i := 0; i < length; i++ {
-		ozlog.Infof("len: %d", len(pockers))
 		// 随机获取一张牌
 		index := genRandCountForDiff(pockers)
-		ozlog.Infof("pock: %v", pockers)
 		if i%3 == 0 {
 			// 主玩家
 			MainPlayer <- pockers[index]
