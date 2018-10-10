@@ -73,6 +73,7 @@ func trimBoardGroup(boards []string) {
 		boards = append(boards[:s], boards[s+1:]...)
 	}
 	bs := sortBoard(boards)
+	one, two, three, four := trimTwinsBoards(bs)
 }
 
 // sortBoard 洗牌-按照牌面大小将所有牌从小到大排列
@@ -90,4 +91,50 @@ func sortBoard(boards []string) []int {
 		pss = append(pss, n)
 	}
 	return sectionSort(pss)
+}
+
+// trimTwinsBoards 整理连续的牌(2、3、4张)及单牌
+func trimTwinsBoards(boards []int) (map[int][]int, map[int][]int, map[int][]int, map[int][]int) {
+	var (
+		curLen                                           int
+		singleBoards, twoBoards, threeBoards, fourBoards map[int][]int
+	)
+	singleBoards = make(map[int][]int)
+	twoBoards = make(map[int][]int)
+	threeBoards = make(map[int][]int)
+	fourBoards = make(map[int][]int)
+
+	length := len(boards)
+	for i := 0; i < length; i++ {
+		if i < curLen {
+			continue
+		}
+		if i+1 >= length {
+			break
+		}
+		if boards[i] == boards[i+1] {
+			if i+2 >= length {
+				break
+			}
+			if boards[i] == boards[i+2] {
+				if i+3 >= length {
+					break
+				}
+				if boards[i] == boards[i+3] {
+					fourBoards[4] = append(fourBoards[4], boards[i], boards[i+1], boards[i+2], boards[1+3])
+					curLen += 4
+					continue
+				}
+				threeBoards[3] = append(threeBoards[3], boards[i], boards[i+1], boards[i+2])
+				curLen += 3
+				continue
+			}
+			twoBoards[2] = append(twoBoards[3], boards[i], boards[i+1])
+			curLen += 2
+			continue
+		}
+		singleBoards[1] = append(singleBoards[1], boards[i])
+		curLen += 1
+	}
+	return singleBoards, twoBoards, threeBoards, fourBoards
 }
