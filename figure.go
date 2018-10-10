@@ -22,7 +22,7 @@ func GetPlayerWeight(playersPockers []string) int {
 	return weight
 }
 
-// getTwinsNum 时间复杂度 2logn output: 对子的总量
+// getTwinsNum 时间复杂度 2logn output: 单个对子的总量
 func getTwinsNum(as []string) int {
 	var (
 		pss []int
@@ -59,4 +59,35 @@ func getTwinsNum(as []string) int {
 		}
 	}
 	return w
+}
+
+// trimBoardGroup 洗牌
+func trimBoardGroup(boards []string) {
+	// 查找是否存在大小王
+	b := binarySearch(boards, BigKing)
+	if b >= 0 {
+		boards = append(boards[:b], boards[b+1:]...)
+	}
+	s := binarySearch(boards, SmallKing)
+	if s >= 0 {
+		boards = append(boards[:s], boards[s+1:]...)
+	}
+	bs := sortBoard(boards)
+}
+
+// sortBoard 洗牌-按照牌面大小将所有牌从小到大排列
+func sortBoard(boards []string) []int {
+	var (
+		pss []int
+	)
+	// 取出牌面
+	for _, a := range boards {
+		n, err := getPockerNumber(a)
+		if err != nil {
+			ozlog.Infof("getTwinsNum: get pocker num err->%v", err)
+			continue
+		}
+		pss = append(pss, n)
+	}
+	return sectionSort(pss)
 }
